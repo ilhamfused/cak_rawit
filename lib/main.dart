@@ -1,5 +1,7 @@
 import 'package:cak_rawit/presentations/pages/home_screen.dart';
+import 'package:cak_rawit/presentations/pages/onboarding_screen.dart';
 import 'package:cak_rawit/presentations/pages/splash_screen.dart';
+import 'package:cak_rawit/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,8 +20,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
-        '/onboarding': (context) => HomeScreen(title: 'Flutter Demo Home Page'),
-        // AppRoutes.dashboard_screen: (context) => DashboardScreen(),
+        '/onboarding': (context) => OnboardingScreen(),
+        AppRouter.dashboardScreen: (context) => HomeScreen(),
       },
     );
   }

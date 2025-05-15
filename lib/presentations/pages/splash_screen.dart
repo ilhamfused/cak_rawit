@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cak_rawit/presentations/pages/home_screen.dart';
+import 'package:cak_rawit/presentations/pages/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return HomeScreen(title: 'Flutter Demo Home Page');
+            return OnboardingScreen();
           },
         ),
       );
