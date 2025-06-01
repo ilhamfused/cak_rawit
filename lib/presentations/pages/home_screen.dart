@@ -1,87 +1,219 @@
+import 'package:cak_rawit/presentations/colors/app_colors.dart';
+import 'package:cak_rawit/presentations/pages/distribution_screen.dart';
+import 'package:cak_rawit/presentations/pages/history_screen.dart';
+import 'package:cak_rawit/presentations/pages/scan_screen.dart';
+import 'package:cak_rawit/presentations/pages/tips_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  // final String title;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _counter = 0;
+  @override
+  void initState() {
+    super.initState();
+    _precacheImages();
+  }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Future<void> _precacheImages() async {
+    await Future.wait([
+      // precacheImage(Image.asset("assets/quality.png").image, context),
+      // precacheImage(Image.asset("assets/bg_baru.png").image, context),
+      // precacheImage(Image.asset("assets/deteksi.png").image, context),
+      // precacheImage(Image.asset("assets/dokumen.png").image, context),
+      // precacheImage(Image.asset("assets/lampu.png").image, context),
+      // precacheImage(Image.asset("assets/info.png").image, context),
+      // precacheImage(Image.asset("assets/distribusi.png").image, context),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text('homescreen'),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    // final bodyHeight = screenHeight - myAppBar.preferredSize.height - MediaQuery.of(context).padding.top;
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: appColor.bgColorGreen,
+        body: Stack(
+          children: [
+            Container(
+              height: screenHeight * 0.35,
+              padding: EdgeInsets.symmetric(
+                vertical: screenHeight * 0.02,
+                horizontal: screenWidth * 0.05,
+              ),
+              color: appColor.primaryColorGreen,
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: screenHeight * 0.015),
+                      const Text(
+                        'Selamat Datang!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.005),
+                      const Text(
+                        'Semoga hari anda selalu menyenangkan.',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: screenHeight * 0.04),
+                  Container(
+                    // margin: EdgeInsets.symmetric(vertical: screenWidth * 0.025),
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.02,
+                      horizontal: screenWidth * 0.05,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: appColor.secondaryColorGreen,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(color: Colors.grey.shade300, blurRadius: 8),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'Solusi Cerdas Identifikasi Cabai Rawit',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        // const SizedBox(width: 16),
+                        Image.asset(
+                          'assets/images/cabai-rawit-merah-hijau-tumpuk2.png',
+                          width: screenWidth * 0.225,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+              child: Container(
+                margin: EdgeInsets.only(top: screenHeight * 0.295),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        padding: const EdgeInsets.all(10),
+                        children: [
+                          _buildMenuItem(
+                            context,
+                            "assets/images/menu-scan (2).svg",
+                            // _localizedStrings[_selectedLanguage]!['cek_kualitas_cabai']!,
+                            "Cek kualitas cabai",
+                            ScanScreen(),
+                          ),
+                          _buildMenuItem(
+                            context,
+                            "assets/images/menu-history (2).svg",
+                            "riwayat deteksi",
+                            HistoryScreen(),
+                          ),
+                          _buildMenuItem(
+                            context,
+                            "assets/images/menu-tips (2).svg",
+                            "Tips seputar cabai",
+                            TipsScreen(),
+                          ),
+                          _buildMenuItem(
+                            context,
+                            "assets/images/menu-tentang.svg",
+                            "Tentang Aplikasi",
+                            DistributionScreen(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _buildMenuItem(
+    BuildContext context,
+    String imagePath,
+    String title,
+    Widget screen,
+  ) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => screen),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.all(screenWidth * 0.01),
+          decoration: BoxDecoration(
+            color: appColor.secondaryColorGreen,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                imagePath,
+                width: MediaQuery.of(context).size.width * 0.2,
+                // color: appColor.primaryColorGreen,
+                colorFilter: ColorFilter.mode(
+                  appColor.primaryColorGreen,
+                  BlendMode.srcIn,
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.02),
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
