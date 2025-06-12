@@ -1,0 +1,442 @@
+=================================== SCAN RESULT SCREEN =================================================  
+  
+  // Future<void> runKlasifikasi() async {
+  //   try {
+  //     // Load interpreter
+  //     final interpreter = await Interpreter.fromAsset(
+  //       'assets/model/coba_model_mobilenet.tflite',
+  //     );
+  //     final labels = await loadLabels('assets/model/labels.txt');
+
+  //     // Load dan decode gambar
+  //     final rawImage = img.decodeImage(
+  //       widget.selectedImageFile!.readAsBytesSync(),
+  //     );
+  //     if (rawImage == null) {
+  //       print("Gagal decode gambar");
+  //       return;
+  //     }
+
+  //     // Resize dan normalisasi
+  //     final inputSize = interpreter.getInputTensor(0).shape[1]; // Misalnya 224
+  //     final resizedImage = img.copyResize(
+  //       rawImage,
+  //       width: inputSize,
+  //       height: inputSize,
+  //     );
+
+  //     final input = List.generate(inputSize, (y) {
+  //       return List.generate(inputSize, (x) {
+  //         final pixel = resizedImage.getPixel(x, y);
+  //         final r = img.getRed(pixel) / 255.0;
+  //         final g = img.getGreen(pixel) / 255.0;
+  //         final b = img.getBlue(pixel) / 255.0;
+  //         return [r, g, b];
+  //       });
+  //     });
+
+  //     final inputTensor = [input]; // Shape: [1, 224, 224, 3]
+
+  //     // Siapkan output
+  //     final outputShape =
+  //         interpreter.getOutputTensor(0).shape; // [1, num_classes]
+  //     final numClasses = outputShape[1];
+  //     final output = List.generate(1, (_) => List.filled(numClasses, 0.0));
+
+  //     // Jalankan inferensi
+  //     interpreter.run(inputTensor, output);
+
+  //     // Ambil hasil prediksi
+  //     final probs = output[0]; // [prob1, prob2, ..., probN]
+  //     final maxIndex = probs.indexWhere(
+  //       (p) => p == probs.reduce((a, b) => a > b ? a : b),
+  //     );
+  //     final label = labels[maxIndex];
+  //     final confidence = probs[maxIndex];
+
+  //     print("Label: $label");
+  //     print("Confidence: ${(confidence * 100).toStringAsFixed(2)}%");
+
+  //     // Update ke UI jika perlu
+  //     setState(() {
+  //       resultLabel = label;
+  //       resultConfidence = confidence;
+  //     });
+  //     isLoading = false;
+  //   } catch (e) {
+  //     print("Terjadi kesalahan: $e");
+  //   }
+  // }
+
+  // Future<List<String>> loadLabels(String path) async {
+  //   final raw = await rootBundle.loadString(path);
+  //   return LineSplitter.split(raw).toList();
+  // }
+
+  // Future<void> runRegresiKadarAir() async {
+  //   try {
+  //     final interpreter = await Interpreter.fromAsset(
+  //       "assets/model/model_kadar_air.tflite",
+  //     );
+
+  //     // Load dan decode gambar
+  //     final imageRaw = img.decodeImage(
+  //       widget.selectedImageFile!.readAsBytesSync(),
+  //     );
+  //     if (imageRaw == null) {
+  //       print("Gagal decode gambar");
+  //       return;
+  //     }
+
+  //     // Ambil input shape model
+  //     final inputTensorShape =
+  //         interpreter.getInputTensor(0).shape; // [1, 224, 224, 3]
+  //     final inputSize = inputTensorShape[1]; // 224
+
+  //     // Resize ke ukuran input model
+  //     final resizedImage = img.copyResize(
+  //       imageRaw,
+  //       width: inputSize,
+  //       height: inputSize,
+  //     );
+
+  //     // Buat tensor [1, 224, 224, 3] dan normalisasi manual ke [0,1]
+  //     final input = List.generate(
+  //       1,
+  //       (_) => List.generate(
+  //         inputSize,
+  //         (y) => List.generate(inputSize, (x) {
+  //           final pixel = resizedImage.getPixel(x, y);
+  //           return [
+  //             img.getRed(pixel) / 255.0,
+  //             img.getGreen(pixel) / 255.0,
+  //             img.getBlue(pixel) / 255.0,
+  //           ];
+  //         }),
+  //       ),
+  //     );
+
+  //     // Siapkan output
+  //     // final output = List.filled(1, 0.0).reshape([1]);
+  //     final output = List.generate(1, (_) => List.filled(1, 0.0));
+
+  //     // Jalankan inferensi
+  //     interpreter.run(input, output);
+
+  //     // final prediction = output[0][0]; // Output regresi
+  //     final prediction = output[0][0];
+  //     const maxKadarAir = 91.0;
+  //     final kadarAir = prediction * maxKadarAir;
+
+  //     print("Prediksi kadar air: ${kadarAir.toStringAsFixed(2)}%");
+
+  //     setState(() {
+  //       kadarAirResult = "${kadarAir.toStringAsFixed(2)}%";
+  //     });
+  //     isLoading = false;
+  //   } catch (e) {
+  //     print("Terjadi kesalahan: $e");
+  //   }
+  // }
+
+    // Future<void> processML() async {
+  //   try {
+  //     final klasifikasiResult = await MLService.runKlasifikasi(
+  //       widget.selectedImageFile!,
+  //     );
+  //     final kadarAir = await MLService.runRegresi(widget.selectedImageFile!);
+
+  //     setState(() {
+  //       resultLabel = klasifikasiResult['label'];
+  //       resultConfidence = klasifikasiResult['confidence'];
+  //       kadarAirResult = kadarAir;
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print("Gagal memproses ML: $e");
+  //   }
+  // }
+
+
+  ===================================== ML SERVICE ===============================================
+  // class InferenceParams {
+//   final Uint8List imageBytes;
+//   final String modelPath;
+//   final String? labelPath;
+//   final bool isClassification;
+
+//   InferenceParams({
+//     required this.imageBytes,
+//     required this.modelPath,
+//     this.labelPath,
+//     required this.isClassification,
+//   });
+// }
+
+// class InferenceResult {
+//   final String? label;
+//   final double? confidence;
+//   final double? kadarAir;
+
+//   InferenceResult({this.label, this.confidence, this.kadarAir});
+// }
+
+// class MLService {
+//   static Future<InferenceResult> runInBackground(InferenceParams params) async {
+//     final receivePort = ReceivePort();
+//     await Isolate.spawn(_entryPoint, receivePort.sendPort);
+
+//     final sendPort = await receivePort.first as SendPort;
+//     final answerPort = ReceivePort();
+//     sendPort.send([params, answerPort.sendPort]);
+
+//     final result = await answerPort.first;
+//     return result as InferenceResult;
+//   }
+
+//   static void _entryPoint(SendPort sendPort) async {
+//     final port = ReceivePort();
+//     sendPort.send(port.sendPort);
+
+//     await for (final message in port) {
+//       final params = message[0] as InferenceParams;
+//       final replyPort = message[1] as SendPort;
+
+//       final result = await _process(params);
+//       replyPort.send(result);
+//     }
+//   }
+
+//   static Future<InferenceResult> _process(InferenceParams params) async {
+//     final interpreter = await Interpreter.fromAsset(params.modelPath);
+//     final decodedImage = img.decodeImage(params.imageBytes);
+//     if (decodedImage == null) return InferenceResult();
+
+//     final inputSize = interpreter.getInputTensor(0).shape[1];
+//     final resized = img.copyResize(decodedImage, width: inputSize, height: inputSize);
+
+//     final input = List.generate(1, (_) => List.generate(
+//       inputSize,
+//       (y) => List.generate(inputSize, (x) {
+//         final pixel = resized.getPixel(x, y);
+//         return [
+//           img.getRed(pixel) / 255.0,
+//           img.getGreen(pixel) / 255.0,
+//           img.getBlue(pixel) / 255.0,
+//         ];
+//       }),
+//     ));
+
+//     if (params.isClassification) {
+//       final output = List.generate(1, (_) => List.filled(
+//         interpreter.getOutputTensor(0).shape[1],
+//         0.0,
+//       ));
+//       interpreter.run(input, output);
+
+//       final probs = output[0];
+//       final maxIndex = probs.indexWhere((p) => p == probs.reduce((a, b) => a > b ? a : b));
+
+//       final labels = params.labelPath != null
+//           ? (await rootBundle.loadString(params.labelPath!)).split('\n')
+//           : [];
+
+//       return InferenceResult(
+//         label: labels.isNotEmpty ? labels[maxIndex] : "Tidak diketahui",
+//         confidence: probs[maxIndex],
+//       );
+//     } else {
+//       final output = List.generate(1, (_) => List.filled(1, 0.0));
+//       interpreter.run(input, output);
+
+//       final pred = output[0][0];
+//       const maxKadarAir = 91.0;
+//       return InferenceResult(kadarAir: pred * maxKadarAir);
+//     }
+//   }
+// }
+
+// class KlasifikasiResult {
+//   final String label;
+//   final double confidence;
+//   KlasifikasiResult(this.label, this.confidence);
+// }
+
+// class MLService {
+//   static Future<List<String>> _loadLabels(String path) async {
+//     final raw = await rootBundle.loadString(path);
+//     return LineSplitter.split(raw).toList();
+//   }
+
+//   static Future<KlasifikasiResult> runKlasifikasi(File imageFile) async {
+//     final interpreter = await Interpreter.fromAsset(
+//       'assets/model/coba_model_mobilenet.tflite',
+//     );
+//     final labels = await _loadLabels('assets/model/labels.txt');
+
+//     final rawImage = img.decodeImage(imageFile.readAsBytesSync());
+//     if (rawImage == null) throw Exception("Gagal decode gambar");
+
+//     final inputSize = interpreter.getInputTensor(0).shape[1];
+//     final resizedImage = img.copyResize(
+//       rawImage,
+//       width: inputSize,
+//       height: inputSize,
+//     );
+
+//     final input = List.generate(inputSize, (y) {
+//       return List.generate(inputSize, (x) {
+//         final pixel = resizedImage.getPixel(x, y);
+//         return [
+//           img.getRed(pixel) / 255.0,
+//           img.getGreen(pixel) / 255.0,
+//           img.getBlue(pixel) / 255.0,
+//         ];
+//       });
+//     });
+
+//     final inputTensor = [input];
+//     final outputShape = interpreter.getOutputTensor(0).shape;
+//     final output = List.generate(1, (_) => List.filled(outputShape[1], 0.0));
+
+//     interpreter.run(inputTensor, output);
+
+//     final probs = output[0];
+//     final maxIndex = probs.indexWhere(
+//       (p) => p == probs.reduce((a, b) => a > b ? a : b),
+//     );
+
+//     return KlasifikasiResult(labels[maxIndex], probs[maxIndex]);
+//   }
+
+//   static Future<String> runRegresiKadarAir(File imageFile) async {
+//     final interpreter = await Interpreter.fromAsset(
+//       'assets/model/model_kadar_air.tflite',
+//     );
+
+//     final imageRaw = img.decodeImage(imageFile.readAsBytesSync());
+//     if (imageRaw == null) throw Exception("Gagal decode gambar");
+
+//     final inputSize = interpreter.getInputTensor(0).shape[1];
+//     final resizedImage = img.copyResize(
+//       imageRaw,
+//       width: inputSize,
+//       height: inputSize,
+//     );
+
+//     final input = List.generate(
+//       1,
+//       (_) => List.generate(inputSize, (y) {
+//         return List.generate(inputSize, (x) {
+//           final pixel = resizedImage.getPixel(x, y);
+//           return [
+//             img.getRed(pixel) / 255.0,
+//             img.getGreen(pixel) / 255.0,
+//             img.getBlue(pixel) / 255.0,
+//           ];
+//         });
+//       }),
+//     );
+
+//     final output = List.generate(1, (_) => List.filled(1, 0.0));
+
+//     interpreter.run(input, output);
+//     final prediction = output[0][0];
+//     const maxKadarAir = 91.0;
+//     final kadarAir = prediction * maxKadarAir;
+
+//     return "${kadarAir.toStringAsFixed(2)}%";
+//   }
+// }
+
+// class MLService {
+//   static Future<Map<String, dynamic>> runKlasifikasi(File imageFile) async {
+//     try {
+//       final interpreter = await Interpreter.fromAsset(
+//         'assets/model/coba_model_mobilenet.tflite',
+//       );
+//       final labels = await _loadLabels('assets/model/labels.txt');
+
+//       final rawImage = img.decodeImage(imageFile.readAsBytesSync());
+//       if (rawImage == null) throw Exception("Gagal decode gambar");
+
+//       final inputSize = interpreter.getInputTensor(0).shape[1];
+//       final resizedImage = img.copyResize(
+//         rawImage,
+//         width: inputSize,
+//         height: inputSize,
+//       );
+
+//       final input = List.generate(inputSize, (y) {
+//         return List.generate(inputSize, (x) {
+//           final pixel = resizedImage.getPixel(x, y);
+//           final r = img.getRed(pixel) / 255.0;
+//           final g = img.getGreen(pixel) / 255.0;
+//           final b = img.getBlue(pixel) / 255.0;
+//           return [r, g, b];
+//         });
+//       });
+
+//       final inputTensor = [input];
+//       final outputShape = interpreter.getOutputTensor(0).shape;
+//       final output = List.generate(1, (_) => List.filled(outputShape[1], 0.0));
+
+//       interpreter.run(inputTensor, output);
+//       final probs = output[0];
+//       final maxIndex = probs.indexWhere(
+//         (p) => p == probs.reduce((a, b) => a > b ? a : b),
+//       );
+
+//       return {'label': labels[maxIndex], 'confidence': probs[maxIndex]};
+//     } catch (e) {
+//       print("Error klasifikasi: $e");
+//       rethrow;
+//     }
+//   }
+
+//   static Future<String> runRegresi(File imageFile) async {
+//     try {
+//       final interpreter = await Interpreter.fromAsset(
+//         'assets/model/model_kadar_air.tflite',
+//       );
+//       final rawImage = img.decodeImage(imageFile.readAsBytesSync());
+//       if (rawImage == null) throw Exception("Gagal decode gambar");
+
+//       final inputSize = interpreter.getInputTensor(0).shape[1];
+//       final resizedImage = img.copyResize(
+//         rawImage,
+//         width: inputSize,
+//         height: inputSize,
+//       );
+
+//       final input = List.generate(
+//         1,
+//         (_) => List.generate(inputSize, (y) {
+//           return List.generate(inputSize, (x) {
+//             final pixel = resizedImage.getPixel(x, y);
+//             return [
+//               img.getRed(pixel) / 255.0,
+//               img.getGreen(pixel) / 255.0,
+//               img.getBlue(pixel) / 255.0,
+//             ];
+//           });
+//         }),
+//       );
+
+//       final output = List.generate(1, (_) => List.filled(1, 0.0));
+//       interpreter.run(input, output);
+
+//       const maxKadarAir = 91.0;
+//       final kadarAir = output[0][0] * maxKadarAir;
+//       return "${kadarAir.toStringAsFixed(2)}%";
+//     } catch (e) {
+//       print("Error regresi: $e");
+//       rethrow;
+//     }
+//   }
+
+//   static Future<List<String>> _loadLabels(String path) async {
+//     final raw = await rootBundle.loadString(path);
+//     return LineSplitter.split(raw).toList();
+//   }
+// }

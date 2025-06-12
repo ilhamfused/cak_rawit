@@ -1,0 +1,6 @@
+hijau_kering
+hijau_sedang
+hijau_segar
+merah_kering
+merah_sedang
+merah_segar

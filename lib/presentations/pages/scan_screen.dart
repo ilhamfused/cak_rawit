@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
+import 'package:cak_rawit/presentations/pages/scan_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -99,7 +100,21 @@ class _ScanScreenState extends State<ScanScreen> {
                   height: screenWidth * 0.7,
                   child:
                       selectedImageFile != null
-                          ? Image.file(selectedImageFile!)
+                          ? Container(
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: appColor.primaryColorGreen,
+                                width: 2,
+                              ),
+                              image: DecorationImage(
+                                image: FileImage(selectedImageFile!),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
                           : Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[400],
@@ -223,16 +238,20 @@ class _ScanScreenState extends State<ScanScreen> {
               ),
               SizedBox(height: screenHeight * 0.035),
               GestureDetector(
-                onTap: selectedImageFile != null
-                        ? null
-                        // () {
-                        //     Navigator.push(context,
-                        //         MaterialPageRoute(builder: (context) {
-                        //       return HasilAnalisaScreen(
-                        //         selectedImageFile: selectedImageFile,
-                        //       );
-                        //     }));
-                        //   }
+                onTap:
+                    selectedImageFile != null
+                        ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ScanResultScreen(
+                                  selectedImageFile: selectedImageFile,
+                                );
+                              },
+                            ),
+                          );
+                        }
                         : null,
                 child: Container(
                   height: screenHeight * 0.1,
