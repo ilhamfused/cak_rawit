@@ -1,8 +1,13 @@
 // import 'dart:convert';
 import 'dart:io';
+import 'package:cak_rawit/databases/db_helper.dart';
+import 'package:cak_rawit/models/prediction_result.dart';
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
 import 'package:cak_rawit/services/ml_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 // import 'package:flutter/services.dart';
 // import 'package:image/image.dart' as img;
 // import 'package:tflite_flutter/tflite_flutter.dart';
@@ -18,7 +23,7 @@ class ScanResultScreen extends StatefulWidget {
 class _ScanResultScreenState extends State<ScanResultScreen> {
   String? resultLabel;
   double? resultConfidence;
-  String? kadarAirResult;
+  double? kadarAirResult;
   bool isLoading = true;
 
   final mlService = MLService();
@@ -27,6 +32,49 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
   void initState() {
     super.initState();
     processML();
+  }
+
+  Future<String> saveImagePermanently(File imageFile) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final uuid = Uuid().v4(); // Untuk memberi nama unik
+    final savedImage = await imageFile.copy('${appDir.path}/$uuid.jpg');
+    return savedImage.path;
+  }
+
+  Future<void> savePredictionResult({
+    required BuildContext context,
+    required String label,
+    required double confidence,
+    required double moisture,
+    required String imagePath,
+  }) async {
+    try {
+      final timestamp = DateFormat(
+        'yyyy-MM-dd HH:mm:ss',
+      ).format(DateTime.now());
+
+      String imagePath = await saveImagePermanently(widget.selectedImageFile!);
+      print("image path : ${imagePath}");
+      // print("image path : ${widget.selectedImageFile!.path}");
+      final result = PredictionResult(
+        label: label,
+        confidence: confidence,
+        moisture: moisture,
+        imagePath: imagePath,
+        timestamp: timestamp,
+      );
+
+      await DBHelper().insertPrediction(result);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hasil prediksi berhasil disimpan!')),
+      );
+    } catch (e) {
+      debugPrint('Gagal menyimpan hasil prediksi: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan hasil prediksi.')),
+      );
+    }
   }
 
   Future<void> processML() async {
@@ -38,18 +86,17 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
       setState(() {
         resultLabel = klasifikasiResult.label;
         resultConfidence = klasifikasiResult.confidence;
-        kadarAirResult = "${kadarAir.toStringAsFixed(2)}%";
+        // kadarAirResult = "${kadarAir.toStringAsFixed(2)}%";
+        kadarAirResult = kadarAir;
         isLoading = false;
       });
+      print("label : " + resultLabel!);
+      print("confidence : $resultConfidence!");
+      print("kadar air :  $kadarAirResult");
     } catch (e) {
       print("Gagal memproses ML: $e");
     }
   }
-
-
-
-
-
 
   @override
   void dispose() {
@@ -164,6 +211,17 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                       'Kadar: ${(kadarAirResult)}',
                       // .toStringAsFixed(2)
                     ),
+                ElevatedButton(
+                  onPressed:
+                      () => savePredictionResult(
+                        context: context,
+                        label: resultLabel!,
+                        confidence: resultConfidence!,
+                        moisture: kadarAirResult!,
+                        imagePath: widget.selectedImageFile!.path,
+                      ),
+                  child: Text('Simpan Hasil Prediksi'),
+                ),
               ],
             ),
           ),
