@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-// import 'dart:isolate';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';

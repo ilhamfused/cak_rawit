@@ -1,16 +1,13 @@
-// import 'dart:convert';
 import 'dart:io';
-import 'package:cak_rawit/databases/db_helper.dart';
-import 'package:cak_rawit/models/prediction_result.dart';
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
+import 'package:cak_rawit/presentations/pages/home_screen.dart';
+import 'package:cak_rawit/presentations/pages/tips_screen.dart';
+import 'package:cak_rawit/presentations/widgets/custom_progress_bar.dart';
+import 'package:cak_rawit/router/app_router.dart';
+import 'package:cak_rawit/services/helper_function.dart';
 import 'package:cak_rawit/services/ml_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
-// import 'package:flutter/services.dart';
-// import 'package:image/image.dart' as img;
-// import 'package:tflite_flutter/tflite_flutter.dart';
 
 class ScanResultScreen extends StatefulWidget {
   const ScanResultScreen({super.key, required this.selectedImageFile});
@@ -34,49 +31,6 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
     processML();
   }
 
-  Future<String> saveImagePermanently(File imageFile) async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final uuid = Uuid().v4(); // Untuk memberi nama unik
-    final savedImage = await imageFile.copy('${appDir.path}/$uuid.jpg');
-    return savedImage.path;
-  }
-
-  Future<void> savePredictionResult({
-    required BuildContext context,
-    required String label,
-    required double confidence,
-    required double moisture,
-    required String imagePath,
-  }) async {
-    try {
-      final timestamp = DateFormat(
-        'yyyy-MM-dd HH:mm:ss',
-      ).format(DateTime.now());
-
-      String imagePath = await saveImagePermanently(widget.selectedImageFile!);
-      print("image path : ${imagePath}");
-      // print("image path : ${widget.selectedImageFile!.path}");
-      final result = PredictionResult(
-        label: label,
-        confidence: confidence,
-        moisture: moisture,
-        imagePath: imagePath,
-        timestamp: timestamp,
-      );
-
-      await DBHelper().insertPrediction(result);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hasil prediksi berhasil disimpan!')),
-      );
-    } catch (e) {
-      debugPrint('Gagal menyimpan hasil prediksi: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal menyimpan hasil prediksi.')),
-      );
-    }
-  }
-
   Future<void> processML() async {
     try {
       final file = widget.selectedImageFile!;
@@ -85,8 +39,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
 
       setState(() {
         resultLabel = klasifikasiResult.label;
-        resultConfidence = klasifikasiResult.confidence;
-        // kadarAirResult = "${kadarAir.toStringAsFixed(2)}%";
+        resultConfidence = (klasifikasiResult.confidence) * 100;
         kadarAirResult = kadarAir;
         isLoading = false;
       });
@@ -138,7 +91,6 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("hasil : ${resultLabel}");
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight =
@@ -148,6 +100,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
     return PopScope(
       child: SafeArea(
         child: Scaffold(
+          backgroundColor: appColor.bgColorGreen,
           appBar: AppBar(
             iconTheme: IconThemeData(color: Colors.white),
             title: Text(
@@ -160,69 +113,160 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
             ),
             backgroundColor: appColor.primaryColorGreen,
           ),
-          body: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.15,
-              vertical: screenHeight * 0.1,
-            ),
-            child: Column(
-              children: [
-                Center(
-                  child: Container(
-                    width: screenWidth * 0.7,
-                    height: screenWidth * 0.7,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[400],
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: appColor.primaryColorGreen,
-                        width: 2,
-                      ),
-                      image: DecorationImage(
-                        image: FileImage(widget.selectedImageFile!),
-                        fit: BoxFit.cover,
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.15,
+                vertical: screenHeight * 0.1,
+              ),
+              child: Column(
+                children: [
+                  Center(
+                    child: Container(
+                      width: screenWidth * 0.7,
+                      height: screenWidth * 0.7,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: appColor.primaryColorGreen,
+                          width: 2,
+                        ),
+                        image: DecorationImage(
+                          image: FileImage(widget.selectedImageFile!),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : Text(
-                      resultLabel ?? 'Tidak diketahui',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                  const SizedBox(height: 12),
+                  Text(
+                    'Gambar Terdeteksi',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: appColor.textColorGreen,
+                    ),
+                  ),
+                  isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : Text(
+                        (resultLabel!
+                            .split('_')
+                            .map((word) => toBeginningOfSentenceCase(word))
+                            .join(' ')),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: HelperFunction().textLabelColor(resultLabel!),
+                        ),
+                      ),
+                  const SizedBox(height: 12),
+                  isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                        children: [
+                          Text(
+                            'Kadar Air',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: appColor.textColorGreen,
+                            ),
+                          ),
+                          CustomProgressBar(
+                            value: kadarAirResult!,
+                            color: HelperFunction().progressBarColor(
+                              kadarAirResult!,
+                            ),
+                          ),
+                        ],
+                      ),
+                  const SizedBox(height: 12),
+                  isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                        children: [
+                          Text(
+                            'Akurasi Model',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: appColor.textColorGreen,
+                            ),
+                          ),
+                          CustomProgressBar(
+                            value: resultConfidence!,
+                            color: HelperFunction().progressBarColor(
+                              resultConfidence!,
+                            ),
+                          ),
+                        ],
+                      ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: screenWidth * 0.7,
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          HelperFunction().createLabelMessage(resultLabel!)!,
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.justify,
+                        ),
                       ),
                     ),
-                const SizedBox(height: 12),
-                isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : Text(
-                      'Akurasi: ${(resultConfidence ?? 0.0) * 100}%',
-                      // .toStringAsFixed(2)
-                    ),
-                const SizedBox(height: 12),
-                isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : Text(
-                      'Kadar: ${(kadarAirResult)}',
-                      // .toStringAsFixed(2)
-                    ),
-                ElevatedButton(
-                  onPressed:
-                      () => savePredictionResult(
-                        context: context,
-                        label: resultLabel!,
-                        confidence: resultConfidence!,
-                        moisture: kadarAirResult!,
-                        imagePath: widget.selectedImageFile!.path,
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      side: BorderSide(
+                        color: appColor.primaryColorRed,
+                        width: 2,
                       ),
-                  child: Text('Simpan Hasil Prediksi'),
-                ),
-              ],
+                      backgroundColor: appColor.bgColorGreen,
+                      fixedSize: Size(screenWidth * 0.7, screenHeight * 0.07),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    onPressed:
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => TipsScreen()),
+                        ),
+                    child: Text(
+                      'Cek Halaman Tips',
+                      style: TextStyle(color: appColor.primaryColorRed),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appColor.primaryColorRed,
+                      fixedSize: Size(screenWidth * 0.7, screenHeight * 0.07),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    onPressed:
+                        () => HelperFunction().savePredictionResult(
+                          context: context,
+                          label: resultLabel!,
+                          confidence: resultConfidence!,
+                          moisture: kadarAirResult!,
+                          imagePath: widget.selectedImageFile!.path,
+                          imageFile: widget.selectedImageFile!,
+                        ),
+                    child: Text(
+                      'Simpan Hasil Prediksi',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
