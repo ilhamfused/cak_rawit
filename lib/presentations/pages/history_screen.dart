@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cak_rawit/databases/db_helper.dart';
 import 'package:cak_rawit/models/prediction_result.dart';
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
+import 'package:cak_rawit/services/helper_function.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -41,6 +42,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         kToolbarHeight;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: appColor.bgColorGreen,
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
           title: Text(
@@ -67,22 +69,53 @@ class _HistoryScreenState extends State<HistoryScreen> {
             final predictions = snapshot.data!;
 
             return ListView.builder(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.025,
+                vertical: screenWidth * 0.025,
+              ),
               itemCount: predictions.length,
               itemBuilder: (context, index) {
                 final result = predictions[index];
                 return Card(
+                  color: Colors.grey[50],
                   margin: const EdgeInsets.all(8),
                   child: ListTile(
-                    leading: Image.file(
-                      File(result.imagePath),
+                    leading: Container(
                       width: 50,
                       height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (context, error, stackTrace) =>
-                              Icon(Icons.broken_image),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: FileImage(File(result.imagePath)),
+                          fit: BoxFit.cover,
+                          onError:
+                              (error, stackTrace) => Icon(Icons.broken_image),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: appColor.primaryColorGreen,
+                          width: 1,
+                        ),
+                      ),
+                      // Image.file(
+                      //   File(result.imagePath),
+                      //   width: 50,
+                      //   height: 50,
+                      //   fit: BoxFit.cover,
+                      //   errorBuilder:
+                      //       (context, error, stackTrace) =>
+                      //           Icon(Icons.broken_image),
+                      // ),
                     ),
-                    title: Text(result.label),
+                    title: Text(
+                      result.label
+                          .split('_')
+                          .map((word) => toBeginningOfSentenceCase(word))
+                          .join(' '),
+                      style: TextStyle(
+                        color: HelperFunction().textLabelColor(result.label),
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
