@@ -130,19 +130,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             "assets/images/menu-scan (2).svg",
                             // _localizedStrings[_selectedLanguage]!['cek_kualitas_cabai']!,
-                            "Cek kualitas cabai",
+                            "Cek Kualitas Cabai",
                             ScanScreen(),
                           ),
                           _buildMenuItem(
                             context,
                             "assets/images/menu-history (2).svg",
-                            "riwayat deteksi",
+                            "Riwayat Deteksi",
                             HistoryScreen(),
                           ),
                           _buildMenuItem(
                             context,
                             "assets/images/menu-tips (2).svg",
-                            "Artikel seputar cabai",
+                            "Tips Seputar Cabai",
                             TipsScreen(),
                           ),
                           _buildMenuItem(
@@ -206,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 0, 0, 0),
+                  color: appColor.textColorGreen,
                 ),
                 textAlign: TextAlign.center,
               ),

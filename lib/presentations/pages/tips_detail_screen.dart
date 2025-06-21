@@ -11,6 +11,7 @@ class TipsDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: appColor.bgColorGreen,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
