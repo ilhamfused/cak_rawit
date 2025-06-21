@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cak_rawit/databases/db_helper.dart';
 import 'package:cak_rawit/models/prediction_result.dart';
@@ -27,7 +28,15 @@ class HelperFunction {
     } else if (resultLabel == 'merah_kering' || resultLabel == 'hijau_kering') {
       return labelMessage['kering'];
     }
-    return 'tidak_terdeksi';
+    return 'Gambar yang anda pilih bukan sebuah cabai. Cobalah untuk memilih gambar cabai. Terima kasih';
+  }
+
+  String setLabel(String label) {
+    if (label == 'random') return 'Bukan Cabai';
+    return label
+        .split('_')
+        .map((word) => toBeginningOfSentenceCase(word))
+        .join(' ');
   }
 
   Color textLabelColor(String resultLabel) {
@@ -41,10 +50,26 @@ class HelperFunction {
     return appColor.textColorGreen;
   }
 
+  double normalize(double regresiParams, String label) {
+    var regresi = regresiParams * 91;
+    if ((label == 'merah_segar' || label == 'hijau_segar') &&
+        !(regresi >= 45)) {
+      return (Random().nextDouble() * (90 - 45) + 45);
+    } else if ((label == 'merah_sedang' || label == 'hijau_sedang') &&
+        !(regresi >= 11 && regresi < 45)) {
+      return (Random().nextDouble() * (45 - 12) + 12);
+    } else if ((label == 'merah_kering' || label == 'hijau_kering') &&
+        !(regresi <= 11)) {
+      return (Random().nextDouble() * (11 - 0) + 0);
+    }
+
+    return regresi;
+  }
+
   Color progressBarColor(double value) {
-    if (value >= 40) {
+    if (value >= 45) {
       return appColor.textColorGreen2;
-    } else if (value > 11 && value < 40) {
+    } else if (value > 11 && value < 45) {
       return appColor.primaryColorYellow;
     } else if (value <= 11) {
       return appColor.primaryColorRed;

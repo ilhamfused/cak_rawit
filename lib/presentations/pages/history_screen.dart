@@ -107,10 +107,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       // ),
                     ),
                     title: Text(
-                      result.label
-                          .split('_')
-                          .map((word) => toBeginningOfSentenceCase(word))
-                          .join(' '),
+                      HelperFunction().setLabel(result.label),
                       style: TextStyle(
                         color: HelperFunction().textLabelColor(result.label),
                         fontWeight: FontWeight.w900,

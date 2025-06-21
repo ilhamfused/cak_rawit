@@ -1,5 +1,5 @@
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
-import 'package:cak_rawit/presentations/pages/distribution_screen.dart';
+import 'package:cak_rawit/presentations/pages/information_screen.dart';
 import 'package:cak_rawit/presentations/pages/history_screen.dart';
 import 'package:cak_rawit/presentations/pages/scan_screen.dart';
 import 'package:cak_rawit/presentations/pages/tips_screen.dart';
@@ -142,14 +142,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildMenuItem(
                             context,
                             "assets/images/menu-tips (2).svg",
-                            "Tips seputar cabai",
+                            "Artikel seputar cabai",
                             TipsScreen(),
                           ),
                           _buildMenuItem(
                             context,
                             "assets/images/menu-tentang.svg",
-                            "Tentang Aplikasi",
-                            DistributionScreen(),
+                            "Informasi Aplikasi",
+                            InformationScreen(),
                           ),
                         ],
                       ),

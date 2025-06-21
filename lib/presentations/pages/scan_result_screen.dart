@@ -33,7 +33,10 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
     try {
       final file = widget.selectedImageFile!;
       final klasifikasiResult = await mlService.runClassification(file);
-      final kadarAir = await mlService.runRegression(file);
+      final kadarAir = await mlService.runRegression(
+        file,
+        klasifikasiResult.label,
+      );
 
       setState(() {
         resultLabel = klasifikasiResult.label;
@@ -150,21 +153,20 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                   isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : Text(
-                        (resultLabel!
-                            .split('_')
-                            .map((word) => toBeginningOfSentenceCase(word))
-                            .join(' ')),
+                        HelperFunction().setLabel(resultLabel!),
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
                           color: HelperFunction().textLabelColor(resultLabel!),
                         ),
                       ),
-                  const SizedBox(height: 12),
+
                   isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : Column(
+                      : resultLabel! != 'random'
+                      ? (Column(
                         children: [
+                          const SizedBox(height: 12),
                           Text(
                             'Kadar Air',
                             style: TextStyle(
@@ -180,7 +182,8 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                             ),
                           ),
                         ],
-                      ),
+                      ))
+                      : SizedBox(height: 0),
                   const SizedBox(height: 12),
                   isLoading
                       ? const Center(child: CircularProgressIndicator())

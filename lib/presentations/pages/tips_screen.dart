@@ -4,6 +4,7 @@ import 'package:cak_rawit/models/tips.dart';
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
 import 'package:cak_rawit/presentations/pages/home_screen.dart';
 import 'package:cak_rawit/presentations/pages/tips_detail_screen.dart';
+import 'package:cak_rawit/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -43,8 +44,9 @@ class _TipsScreenState extends State<TipsScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false,
         );
       },
       child: SafeArea(

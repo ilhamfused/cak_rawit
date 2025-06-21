@@ -4,4 +4,4 @@ hijau_segar
 merah_kering
 merah_sedang
 merah_segar
-tidak_terdeteksi
+random

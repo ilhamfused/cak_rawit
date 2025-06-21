@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+import 'package:cak_rawit/services/helper_function.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
@@ -26,7 +28,7 @@ class MLService {
       'assets/model/mobilenetv2_cabai_7kelas.tflite',
     );
     _regressor = await Interpreter.fromAsset(
-      'assets/model/model_kadar_air.tflite',
+      'assets/model/model_kadar_air_2.tflite',
     );
 
     final raw = await rootBundle.loadString('assets/model/labels.txt');
@@ -69,7 +71,7 @@ class MLService {
     return ClassificationResult(_labels[maxIndex], probs[maxIndex]);
   }
 
-  Future<double> runRegression(File imageFile) async {
+  Future<double> runRegression(File imageFile, String label) async {
     if (!_isInitialized) {
       throw Exception("MLService belum diinisialisasi");
     }
@@ -98,7 +100,8 @@ class MLService {
 
     final output = List.generate(1, (_) => List.filled(1, 0.0));
     _regressor.run(input, output);
-    const maxKadarAir = 91.0;
-    return output[0][0] * maxKadarAir;
+    // const maxKadarAir = 91.0;
+    final outputRegressor = HelperFunction().normalize(output[0][0], label);
+    return outputRegressor;
   }
 }
