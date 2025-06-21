@@ -27,7 +27,7 @@ class HelperFunction {
     } else if (resultLabel == 'merah_kering' || resultLabel == 'hijau_kering') {
       return labelMessage['kering'];
     }
-    return 'tidak terdeksi';
+    return 'tidak_terdeksi';
   }
 
   Color textLabelColor(String resultLabel) {

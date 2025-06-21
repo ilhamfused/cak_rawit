@@ -43,6 +43,7 @@ dependencies:
   intl: ^0.19.0
   path_provider: ^2.1.2
   uuid: ^4.5.1
+  flutter_html: ^3.0.0
   # tflite_v2: ^1.0.0
   # tflite_flutter_helper: ^0.2.1
   # tflite_flutter_helper_plus: ^0.0.2
@@ -72,6 +73,7 @@ flutter:
   assets:
     - assets/images/
     - assets/model/
+    - assets/data/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

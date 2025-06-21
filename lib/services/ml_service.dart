@@ -23,7 +23,7 @@ class MLService {
   Future<void> init() async {
     if (_isInitialized) return;
     _classifier = await Interpreter.fromAsset(
-      'assets/model/coba_model_mobilenet.tflite',
+      'assets/model/mobilenetv2_cabai_7kelas.tflite',
     );
     _regressor = await Interpreter.fromAsset(
       'assets/model/model_kadar_air.tflite',
@@ -102,5 +102,3 @@ class MLService {
     return output[0][0] * maxKadarAir;
   }
 }
-
-
