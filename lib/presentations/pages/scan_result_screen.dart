@@ -141,7 +141,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: screenWidth * 0.03),
                   Text(
                     'Gambar Terdeteksi',
                     style: TextStyle(
@@ -166,7 +166,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                       : resultLabel! != 'random'
                       ? (Column(
                         children: [
-                          const SizedBox(height: 12),
+                          SizedBox(height: screenWidth * 0.03),
                           Text(
                             'Kadar Air',
                             style: TextStyle(
@@ -184,7 +184,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                         ],
                       ))
                       : SizedBox(height: 0),
-                  const SizedBox(height: 12),
+                  SizedBox(height: screenWidth * 0.03),
                   isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : Column(
@@ -205,7 +205,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                           ),
                         ],
                       ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: screenWidth * 0.03),
                   SizedBox(
                     width: screenWidth * 0.7,
                     child: Card(
@@ -221,7 +221,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: screenWidth * 0.05),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       side: BorderSide(
@@ -243,7 +243,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                       style: TextStyle(color: appColor.primaryColorRed),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: screenWidth * 0.03),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: appColor.primaryColorRed,

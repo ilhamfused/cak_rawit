@@ -4,7 +4,6 @@ import 'package:cak_rawit/models/tips.dart';
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
 import 'package:cak_rawit/presentations/pages/home_screen.dart';
 import 'package:cak_rawit/presentations/pages/tips_detail_screen.dart';
-import 'package:cak_rawit/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

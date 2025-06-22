@@ -1,11 +1,27 @@
-import 'dart:convert';
-
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
+import 'package:cak_rawit/presentations/pages/tutorial_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InformationScreen extends StatelessWidget {
   const InformationScreen({super.key});
+
+  void hubungiPengembang() async {
+    final String email = 'luluspolines@gmail.com';
+    final String subject = 'Masukan Aplikasi Cabai Rawit';
+
+    final String url = 'mailto:$email?subject=${Uri.encodeComponent(subject)}';
+
+    final Uri uri = Uri.parse(url);
+
+    try {
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        throw 'Tidak bisa membuka email client';
+      }
+    } catch (e) {
+      print("Gagal membuka email: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +48,7 @@ class InformationScreen extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(screenWidth * 0.05),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -50,7 +66,7 @@ class InformationScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.justify,
                 ),
-                SizedBox(height: 18),
+                SizedBox(height: screenWidth * 0.075),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -62,7 +78,15 @@ class InformationScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      onPressed: () => {},
+                      onPressed:
+                          () => {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TutorialScreen(),
+                              ),
+                            ),
+                          },
                       child: Text(
                         'Panduan Penggunaan Aplikasi',
                         style: TextStyle(color: Colors.white),
@@ -70,7 +94,7 @@ class InformationScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: screenWidth * 0.025),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -82,7 +106,7 @@ class InformationScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      onPressed: () => {},
+                      onPressed: () => {hubungiPengembang()},
                       child: Text(
                         'Hubungi Pengembang',
                         style: TextStyle(color: Colors.white),

@@ -10,6 +10,8 @@ class TipsDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
     return Scaffold(
       backgroundColor: appColor.bgColorGreen,
       appBar: AppBar(
@@ -26,12 +28,16 @@ class TipsDetailScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(screenWidth * 0.04),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(tips.imagePath),
-              SizedBox(height: 16),
+              Image.asset(
+                tips.imagePath,
+                width: screenWidth,
+                fit: BoxFit.cover,
+              ),
+              SizedBox(height: screenWidth * 0.05),
               Html(
                 data: tips.post,
                 style: {
