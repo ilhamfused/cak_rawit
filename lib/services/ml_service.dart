@@ -25,7 +25,7 @@ class MLService {
   Future<void> init() async {
     if (_isInitialized) return;
     _classifier = await Interpreter.fromAsset(
-      'assets/model/mobilenetv2_cabai_7kelas.tflite',
+      'assets/model/mobilenetv2_cabai_7kelas_2.tflite',
     );
     _regressor = await Interpreter.fromAsset(
       'assets/model/model_kadar_air_2.tflite',

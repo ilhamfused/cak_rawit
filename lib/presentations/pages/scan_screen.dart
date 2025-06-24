@@ -33,7 +33,7 @@ class _ScanScreenState extends State<ScanScreen> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('error_gallery')));
+        ).showSnackBar(SnackBar(content: Text('Belum memilih gambar')));
       }
     }
 
@@ -58,7 +58,7 @@ class _ScanScreenState extends State<ScanScreen> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('error_camera')));
+        ).showSnackBar(SnackBar(content: Text('Belum memilih gambar')));
       }
     }
     return null;

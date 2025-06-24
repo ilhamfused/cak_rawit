@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
+import 'package:cak_rawit/presentations/pages/home_screen.dart';
 import 'package:cak_rawit/presentations/pages/tips_screen.dart';
 import 'package:cak_rawit/presentations/widgets/custom_progress_bar.dart';
 import 'package:cak_rawit/services/helper_function.dart';
@@ -99,6 +100,40 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
         MediaQuery.of(context).padding.top -
         kToolbarHeight;
     return PopScope(
+      canPop: false, // Disable back button by default
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          final shouldPop = await showDialog<bool>(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: const Text('Konfirmasi'),
+                  content: const Text(
+                    'Apakah Anda yakin ingin kembali tanpa menyimpan hasil prediksi?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed:
+                          () => Navigator.of(
+                            context,
+                          ).pop(false), // Tidak jadi kembali
+                      child: const Text('Tidak'),
+                    ),
+                    TextButton(
+                      onPressed:
+                          () =>
+                              Navigator.of(context).pop(true), // Lanjut kembali
+                      child: const Text('Ya'),
+                    ),
+                  ],
+                ),
+          );
+
+          if (shouldPop == true) {
+            Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
+          }
+        }
+      },
       child: SafeArea(
         child: Scaffold(
           backgroundColor: appColor.bgColorGreen,
@@ -253,14 +288,23 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                       ),
                     ),
                     onPressed:
-                        () => HelperFunction().savePredictionResult(
-                          context: context,
-                          label: resultLabel!,
-                          confidence: resultConfidence!,
-                          moisture: kadarAirResult!,
-                          imagePath: widget.selectedImageFile!.path,
-                          imageFile: widget.selectedImageFile!,
-                        ),
+                        () => {
+                          HelperFunction().savePredictionResult(
+                            context: context,
+                            label: resultLabel!,
+                            confidence: resultConfidence!,
+                            moisture: kadarAirResult!,
+                            imagePath: widget.selectedImageFile!.path,
+                            imageFile: widget.selectedImageFile!,
+                          ),
+
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                            (route) => false,
+                          ),
+                        },
                     child: Text(
                       'Simpan Hasil Prediksi',
                       style: TextStyle(color: Colors.white),
