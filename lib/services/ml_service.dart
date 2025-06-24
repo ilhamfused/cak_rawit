@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:cak_rawit/services/helper_function.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;

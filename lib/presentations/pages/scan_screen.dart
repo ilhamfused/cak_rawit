@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cak_rawit/presentations/colors/app_colors.dart';
 import 'package:cak_rawit/presentations/pages/scan_result_screen.dart';
+import 'package:cak_rawit/services/ml_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -14,6 +15,47 @@ class ScanScreen extends StatefulWidget {
 
 class _ScanScreenState extends State<ScanScreen> {
   File? selectedImageFile;
+  String? resultLabel;
+  double? resultConfidence;
+  double? kadarAirResult;
+  bool isLoading = false;
+
+  final mlService = MLService();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> processML() async {
+    await Future.delayed(Duration(milliseconds: 10));
+    try {
+      print(isLoading);
+      final file = selectedImageFile!;
+      final klasifikasiResult = await mlService.runClassification(file);
+      final kadarAir = await mlService.runRegression(
+        file,
+        klasifikasiResult.label,
+      );
+
+      setState(() {
+        resultLabel = klasifikasiResult.label;
+        resultConfidence = (klasifikasiResult.confidence) * 100;
+        kadarAirResult = kadarAir;
+      });
+      print(isLoading);
+      print("label : " + resultLabel!);
+      print("confidence : $resultConfidence!");
+      print("kadar air :  $kadarAirResult");
+    } catch (e) {
+      print("Gagal memproses ML: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   Future<File?> _imgFromGallery(BuildContext context) async {
     final picker = ImagePicker();
@@ -66,6 +108,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("build dipanggil, isLoading: $isLoading");
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight =
@@ -240,13 +283,19 @@ class _ScanScreenState extends State<ScanScreen> {
               GestureDetector(
                 onTap:
                     selectedImageFile != null
-                        ? () {
+                        ? () async {
+                          setState(() => isLoading = true);
+                          await processML();
+                          setState(() => isLoading = false);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) {
                                 return ScanResultScreen(
                                   selectedImageFile: selectedImageFile,
+                                  resultConfidence: resultConfidence,
+                                  resultLabel: resultLabel,
+                                  kadarAirResult: kadarAirResult,
                                 );
                               },
                             ),
@@ -282,7 +331,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           size: 26,
                         ),
                         Text(
-                          'Cek Kualitas Cabai',
+                          isLoading ? 'Loading...' : "Cek Kualitas Cabai",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

@@ -9,86 +9,59 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ScanResultScreen extends StatefulWidget {
-  const ScanResultScreen({super.key, required this.selectedImageFile});
+  const ScanResultScreen({
+    super.key,
+    required this.selectedImageFile,
+    required this.resultLabel,
+    required this.resultConfidence,
+    required this.kadarAirResult,
+  });
   final File? selectedImageFile;
+  final String? resultLabel;
+  final double? resultConfidence;
+  final double? kadarAirResult;
 
   @override
   State<ScanResultScreen> createState() => _ScanResultScreenState();
 }
 
 class _ScanResultScreenState extends State<ScanResultScreen> {
-  String? resultLabel;
-  double? resultConfidence;
-  double? kadarAirResult;
-  bool isLoading = true;
+  bool isLoading = false;
 
   final mlService = MLService();
 
   @override
   void initState() {
     super.initState();
-    processML();
+    // processML();
   }
 
-  Future<void> processML() async {
-    try {
-      final file = widget.selectedImageFile!;
-      final klasifikasiResult = await mlService.runClassification(file);
-      final kadarAir = await mlService.runRegression(
-        file,
-        klasifikasiResult.label,
-      );
+  // Future<void> processML() async {
+  //   try {
+  //     final file = widget.selectedImageFile!;
+  //     final klasifikasiResult = await mlService.runClassification(file);
+  //     final kadarAir = await mlService.runRegression(
+  //       file,
+  //       klasifikasiResult.label,
+  //     );
 
-      setState(() {
-        resultLabel = klasifikasiResult.label;
-        resultConfidence = (klasifikasiResult.confidence) * 100;
-        kadarAirResult = kadarAir;
-        isLoading = false;
-      });
-      print("label : " + resultLabel!);
-      print("confidence : $resultConfidence!");
-      print("kadar air :  $kadarAirResult");
-    } catch (e) {
-      print("Gagal memproses ML: $e");
-    }
-  }
+  //     setState(() {
+  //       resultLabel = klasifikasiResult.label;
+  //       resultConfidence = (klasifikasiResult.confidence) * 100;
+  //       kadarAirResult = kadarAir;
+  //       isLoading = false;
+  //     });
+  //     print("label : " + resultLabel!);
+  //     print("confidence : $resultConfidence!");
+  //     print("kadar air :  $kadarAirResult");
+  //   } catch (e) {
+  //     print("Gagal memproses ML: $e");
+  //   }
+  // }
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  Future<bool> _onBackPressed() async {
-    bool confirmExit = await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('try_another_detection'),
-          content: Text('do_you_want_to_try_another_detection'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(
-                'yes',
-                style: TextStyle(color: Color(int.parse("0xff119646"))),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(
-                'no',
-                style: TextStyle(color: Color(int.parse("0xff119646"))),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirmExit ?? false) {
-      Navigator.pop(context);
-    }
-    return false;
   }
 
   @override
@@ -101,7 +74,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
         kToolbarHeight;
     return PopScope(
       canPop: false, // Disable back button by default
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           final shouldPop = await showDialog<bool>(
             context: context,
@@ -117,13 +90,19 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                           () => Navigator.of(
                             context,
                           ).pop(false), // Tidak jadi kembali
-                      child: const Text('Tidak'),
+                      child: Text(
+                        'Tidak',
+                        style: TextStyle(color: appColor.primaryColorRed),
+                      ),
                     ),
                     TextButton(
                       onPressed:
                           () =>
                               Navigator.of(context).pop(true), // Lanjut kembali
-                      child: const Text('Ya'),
+                      child: Text(
+                        'Ya',
+                        style: TextStyle(color: appColor.primaryColorGreen),
+                      ),
                     ),
                   ],
                 ),
@@ -188,17 +167,19 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                   isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : Text(
-                        HelperFunction().setLabel(resultLabel!),
+                        HelperFunction().setLabel(widget.resultLabel!),
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
-                          color: HelperFunction().textLabelColor(resultLabel!),
+                          color: HelperFunction().textLabelColor(
+                            widget.resultLabel!,
+                          ),
                         ),
                       ),
 
                   isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : resultLabel! != 'random'
+                      : widget.resultLabel! != 'random'
                       ? (Column(
                         children: [
                           SizedBox(height: screenWidth * 0.03),
@@ -211,9 +192,9 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                             ),
                           ),
                           CustomProgressBar(
-                            value: kadarAirResult!,
+                            value: widget.kadarAirResult!,
                             color: HelperFunction().progressBarColor(
-                              kadarAirResult!,
+                              widget.kadarAirResult!,
                             ),
                           ),
                         ],
@@ -233,9 +214,9 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                             ),
                           ),
                           CustomProgressBar(
-                            value: resultConfidence!,
+                            value: widget.resultConfidence!,
                             color: HelperFunction().progressBarColor(
-                              resultConfidence!,
+                              widget.resultConfidence!,
                             ),
                           ),
                         ],
@@ -249,7 +230,9 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          HelperFunction().createLabelMessage(resultLabel!)!,
+                          HelperFunction().createLabelMessage(
+                            widget.resultLabel!,
+                          )!,
                           style: TextStyle(fontSize: 16),
                           textAlign: TextAlign.justify,
                         ),
@@ -291,9 +274,9 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                         () => {
                           HelperFunction().savePredictionResult(
                             context: context,
-                            label: resultLabel!,
-                            confidence: resultConfidence!,
-                            moisture: kadarAirResult!,
+                            label: widget.resultLabel!,
+                            confidence: widget.resultConfidence!,
+                            moisture: widget.kadarAirResult!,
                             imagePath: widget.selectedImageFile!.path,
                             imageFile: widget.selectedImageFile!,
                           ),
